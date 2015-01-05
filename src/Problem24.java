@@ -9,12 +9,14 @@ The lexicographic permutations of 0, 1 and 2 are:
 What is the millionth lexicographic permutation of the digits 0, 1, 2, 3, 4, 5, 6, 7, 8 and 9?
 */
 public class Problem24 {
-    private static final char[] chars = "0123456789".toCharArray();
+    private static final char[] chars = "0123".toCharArray();
     private static final int N = 1000000;
 
     public static void main(String[] args) {
         List<String> permutations = new ArrayList<String>();
-        getPermutations(chars, permutations, new boolean[chars.length], new char[chars.length], 0, N);
+        //getPermutations(chars, permutations, new boolean[chars.length], new char[chars.length], 0, N);
+        permutations.add(new String(chars));
+        SEPAPermutations(chars, permutations);
         for (String permutation : permutations) {
             System.out.println(permutation);
         }
@@ -37,5 +39,45 @@ public class Problem24 {
             getPermutations(chars, permutations, used, current, level + 1, n);
             used[i] = false;
         }
+    }
+
+    private static void SEPAPermutations(char[] chars, List<String> permutations) {
+        while (true) {
+            int len = chars.length;
+            int key = len - 1;
+            int newKey = len - 1;
+
+            while (key > 0 && chars[key] <= chars[key - 1]) {
+                key--;
+            }
+
+            key--;
+
+            if (key < 0) {
+                return;
+            }
+
+            while (newKey > key && chars[newKey] <= chars[key]) {
+                newKey--;
+            }
+
+            swap(chars, key, newKey);
+
+            len--;
+            key++;
+
+            while (len > key) {
+                swap(chars, len, key);
+                key++;
+                len--;
+            }
+            permutations.add(new String(chars));
+        }
+    }
+
+    private static void swap(char[] chars, int a, int b) {
+        char temp = chars[a];
+        chars[a] = chars[b];
+        chars[b] = temp;
     }
 }
