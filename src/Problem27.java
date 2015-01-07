@@ -74,7 +74,11 @@ class Seed {
         this.upper = 1000;
     }
 
-    private void fill(int n) {
+    public Set<Integer> getPrimes() {
+        return primes;
+    }
+
+    public void fill(int n) {
         for (int i = upper; i <= n; i++) {
             if (nextPrime(i)) {
                 primes.add(i);
