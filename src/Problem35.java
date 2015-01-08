@@ -3,37 +3,35 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import Helpers.Seed;
+
 /*The number, 197, is called a circular prime because all rotations of the digits: 197, 971, and 719, are themselves prime.
 There are thirteen such primes below 100: 2, 3, 5, 7, 11, 13, 17, 31, 37, 71, 73, 79, and 97.
 How many circular primes are there below one million?*/
 public class Problem35 {
     public static void main(String[] args) {
-        Seed s = new Seed();
-        List<String> perms = new ArrayList<String>();
-        s.fill(1000000);
-        Set<Integer> primes = s.getPrimes();
+        Seed s = new Seed(1000000);
+        //List<String> perms = new ArrayList<String>();
+        List<Integer> rotations = new ArrayList<Integer>();
+        List<Integer> primes = s.getPrimes_list();
         Set<Integer> circularPrimes = new HashSet<Integer>();
-        //SEPAPermutations("769".toCharArray(), perms);
-        //getPermutations("769".toCharArray(), perms, new boolean[3], new char[3], 0);
         for (Integer prime : primes) {
-            boolean allPrimes = true;
-            perms.clear();
-            //SEPAPermutations(("" + prime).toCharArray(), perms);
-            getPermutations(("" + prime).toCharArray(), perms, new boolean[("" + prime).length()], new char[("" + prime).length()], 0);
-            for (String str : perms) {
-                if (!primes.contains(Integer.parseInt(str))) {
-                    allPrimes = false;
+            boolean circular = true;
+            rotations = getRotations(prime);
+            for (Integer rotation : rotations) {
+                if (!primes.contains(rotation)) {
+                    circular = false;
                     break;
                 }
             }
-            if (allPrimes) {
-                //System.out.println(perms);
-                for (String str : perms) {
-                    circularPrimes.add(Integer.parseInt(str));
+            if (circular) {
+                for (Integer num : rotations) {
+                    circularPrimes.add(num);
                 }
             }
         }
         System.out.println(circularPrimes);
+        System.out.println(circularPrimes.size());
     }
 
     private static void getPermutations(char[] chars, List<String> permutations, char[] current, int level) {
@@ -103,5 +101,21 @@ public class Problem35 {
             getPermutations(chars, permutations, used, current, level + 1);
             used[i] = false;
         }
+    }
+
+    private static List<Integer> getRotations(int n) {
+        List<Integer> rotations = new ArrayList<Integer>();
+        int digitCount = ("" + n).length();
+        int temp = 1;
+        rotations.add(n);
+        for (int i = 1; i < digitCount; i++) {
+            temp *= 10;
+        }
+        for (int i = 1; i < digitCount; i++) {
+            n = (n % temp) * 10 + (n / temp);
+            rotations.add(n);
+        }
+
+        return rotations;
     }
 }
