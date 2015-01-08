@@ -16,7 +16,7 @@ public class Problem24 {
         List<String> permutations = new ArrayList<String>();
         //getPermutations(chars, permutations, new boolean[chars.length], new char[chars.length], 0, N);
         permutations.add(new String(chars));
-        SEPAPermutations(chars, permutations);
+        Permutations.SEPAPermutations(chars, permutations);
         for (String permutation : permutations) {
             System.out.println(permutation);
         }
@@ -41,7 +41,12 @@ public class Problem24 {
         }
     }
 
-    private static void SEPAPermutations(char[] chars, List<String> permutations) {
+
+}
+
+class Permutations {
+    public static void SEPAPermutations(char[] chars, List<String> permutations) {
+        permutations.add(new String(chars));
         while (true) {
             int len = chars.length;
             int key = len - 1;
@@ -81,3 +86,4 @@ public class Problem24 {
         chars[b] = temp;
     }
 }
+
