@@ -2,19 +2,23 @@
 containing only these numbers, exactly once each, such that the result is 24.*/
 
 import Helpers.Combinator;
+import com.sun.org.apache.xpath.internal.SourceTree;
 
 import java.util.*;
 
 public class InterviewTask {
     public static void main(String[] args) {
-        int[] numbers = new int[]{1, 3, 4};
-        Character[] operations = new Character[]{'+', '/'};
-        run(numbers, operations);
+        int[] numbers = new int[]{3, 6, 9, 12, 15};
+        Character[] operations = new Character[]{'+', '/', '-', '*'};
+        long start = System.currentTimeMillis();
+        run(numbers, operations, 381);
+        System.out.println(System.currentTimeMillis() - start);
     }
 
-    private static void run(int[] numbers, Character[] operations) {
+    private static void run(int[] numbers, Character[] operations, int sum) {
         List<Rational> rationalNumbers = new ArrayList<Rational>();
         List<Character> operationsList = Arrays.asList(operations);
+        Rational result = new Rational(sum);
 
         for (int n : numbers) {
             rationalNumbers.add(new Rational(n));
@@ -23,7 +27,14 @@ public class InterviewTask {
         List<List<Character>> operationCombinations = Combinator.getCombinations(operationsList, numbers.length - 1);
         List<ReversePolishNotation> all = getAllPolishNotations(numberPermutations, operationCombinations);
         for (ReversePolishNotation notation : all) {
-            System.out.println(notation + " = " + notation.evaluate());
+            try {
+                Rational eval = notation.evaluate();
+                if (eval.equals(result))
+                    System.out.println(notation + " = " + notation.evaluate());
+
+            } catch (Exception e) {
+                //System.out.println(notation);
+            }
         }
     }
 
@@ -73,6 +84,9 @@ public class InterviewTask {
         for (int i = 0; index > 0 && i < value; i++) {
             if (level == 0 && i == 0)
                 continue;
+            if (index <= current.get(index - 1)) {
+                continue;
+            }
             current.set(index - 1, current.get(index - 1) + 1);
             current.set(index, current.get(index) - 1);
             getNextOperand(new ArrayList<Integer>(current), result, level + 1);
@@ -142,6 +156,26 @@ class Rational {
         }
         return sb.toString();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Rational rational = (Rational) o;
+
+        if (denominator != rational.denominator) return false;
+        if (numerator != rational.numerator) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = numerator;
+        result = 31 * result + denominator;
+        return result;
+    }
 }
 
 class ReversePolishNotation {
@@ -192,31 +226,23 @@ class ReversePolishNotation {
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
-        Deque<Rational> stack = new ArrayDeque<Rational>();
+        Deque<Object> stack = new ArrayDeque<Object>();
         Deque<Object> copyOfExpression = new ArrayDeque<Object>(expression);
         Object nextElement;
-        Rational firstOperand, secondOperand;
-        char operator;
+        Object firstOperand, secondOperand;
 
-        //sb.append(copyOfExpression.pop());
         while (!copyOfExpression.isEmpty()) {
             nextElement = copyOfExpression.pop();
-            if (nextElement instanceof Rational) {
-                stack.addFirst((Rational) nextElement);
-            } else {
-                operator = (Character) nextElement;
+            if (nextElement instanceof Character) {
                 firstOperand = stack.pop();
-                if (!stack.isEmpty()) {
-                    secondOperand = stack.pop();
-                    sb = sb.append('(').append(secondOperand).append(operator).append(firstOperand).append(')');
-                } else {
-                    sb = sb.insert(0, operator).insert(0, firstOperand).insert(0, '(').append(')');
-                }
+                secondOperand = stack.pop();
+                stack.push("(" + secondOperand + nextElement + firstOperand + ")");
+            } else {
+                stack.addFirst(nextElement);
             }
         }
         if (stack.size() > 1)
             throw new IllegalStateException("Invalid state of expression in the end of evaluation" + stack);
-        return sb.toString();
+        return (String)stack.pop();
     }
 }
