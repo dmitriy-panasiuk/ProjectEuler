@@ -8,9 +8,34 @@ public class InterviewTask {
     public static void main(String[] args) {
         List<Character> numbers = Arrays.asList('1', '3', '3');
         Rational r = new Rational(2);
-        ReversePolishNotation example = new ReversePolishNotation(Arrays.asList(new Rational(1), new Rational(2), '+', new Rational(3), '*'));
+        /*ReversePolishNotation example = new ReversePolishNotation(Arrays.asList(new Rational(1), new Rational(2), '/', new Rational(3), '/'));
         System.out.println(example);
-        System.out.println(example.evaluate());
+        System.out.println(example.evaluate());*/
+        System.out.println(getOperandsPosition(4));
+    }
+
+    private static List<List<Integer>> getOperandsPosition(int n) {
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        List<Integer> initialPosition = new ArrayList<Integer>();
+        for (int i = 0; i < n - 1; i++) {
+            initialPosition.add(0);
+        }
+        initialPosition.set(n - 2, n - 1);
+        getNextOperand(initialPosition, result, 0);
+        return result;
+    }
+
+    private static void getNextOperand(List<Integer> current, List<List<Integer>> result, int level) {
+        result.add(new ArrayList<Integer>(current));
+        int index = current.size() - 1 - level;
+        int value = current.get(index);
+        for (int i = 0; index > 0 && i < value; i++) {
+            if (level == 0 && i == 0)
+                continue;
+            current.set(index - 1, current.get(index - 1) + 1);
+            current.set(index, current.get(index) - 1);
+            getNextOperand(new ArrayList<Integer>(current), result, level + 1);
+        }
     }
 }
 
