@@ -1,17 +1,58 @@
 /*We have numbers 1, 3, 4 and 6. Create an expression using any elementary operators (+, -, *, /),
 containing only these numbers, exactly once each, such that the result is 24.*/
+
 import Helpers.Combinator;
 
 import java.util.*;
 
 public class InterviewTask {
     public static void main(String[] args) {
-        List<Character> numbers = Arrays.asList('1', '3', '3');
-        Rational r = new Rational(2);
-        /*ReversePolishNotation example = new ReversePolishNotation(Arrays.asList(new Rational(1), new Rational(2), '/', new Rational(3), '/'));
-        System.out.println(example);
-        System.out.println(example.evaluate());*/
-        System.out.println(getOperandsPosition(4));
+        int[] numbers = new int[]{1, 3, 4};
+        Character[] operations = new Character[]{'+', '/'};
+        run(numbers, operations);
+    }
+
+    private static void run(int[] numbers, Character[] operations) {
+        List<Rational> rationalNumbers = new ArrayList<Rational>();
+        List<Character> operationsList = Arrays.asList(operations);
+
+        for (int n : numbers) {
+            rationalNumbers.add(new Rational(n));
+        }
+        List<List<Rational>> numberPermutations = Combinator.getPermutations(rationalNumbers);
+        List<List<Character>> operationCombinations = Combinator.getCombinations(operationsList, numbers.length - 1);
+        List<ReversePolishNotation> all = getAllPolishNotations(numberPermutations, operationCombinations);
+        for (ReversePolishNotation notation : all) {
+            System.out.println(notation + " = " + notation.evaluate());
+        }
+    }
+
+    private static List<ReversePolishNotation> getAllPolishNotations(List<List<Rational>> numberPermutations,
+                                                                     List<List<Character>> operationsCombinations) {
+        List<ReversePolishNotation> allExpressions = new ArrayList<ReversePolishNotation>();
+        List<List<Integer>> operandPositions = getOperandsPosition(numberPermutations.get(0).size());
+        for (List<Rational> nums : numberPermutations) {
+            for (List<Character> opers : operationsCombinations) {
+                List<Object> expression = new ArrayList<Object>();
+                for (List<Integer> position : operandPositions) {
+                    int charPos = 0;
+                    expression.add(nums.get(0));
+                    expression.add(nums.get(1));
+                    for (int i = 0; i < position.size(); i++) {
+                        for (int j = 0; j < position.get(i); j++) {
+                            expression.add(opers.get(charPos++));
+                        }
+                        if ((i + 2) < nums.size()) {
+                            expression.add(nums.get(i + 2));
+                        }
+                    }
+                    allExpressions.add(new ReversePolishNotation(new ArrayList<Object>(expression)));
+                    expression.clear();
+                }
+            }
+        }
+
+        return allExpressions;
     }
 
     private static List<List<Integer>> getOperandsPosition(int n) {
@@ -48,15 +89,15 @@ class Rational {
     }
 
     Rational(int numerator, int denominator) {
-        if(denominator == 0) throw new IllegalArgumentException("denominator can't be zero!");
+        if (denominator == 0) throw new IllegalArgumentException("denominator can't be zero!");
         this.numerator = numerator;
         this.denominator = denominator;
         normalize();
     }
 
     public Rational add(Rational that) {
-        return new Rational(this.numerator * that.denominator + this.denominator*that.numerator,
-                                        this.denominator * that.denominator);
+        return new Rational(this.numerator * that.denominator + this.denominator * that.numerator,
+                this.denominator * that.denominator);
     }
 
     public Rational subtract(Rational that) {
@@ -64,16 +105,17 @@ class Rational {
     }
 
     public Rational multiply(Rational that) {
-        return new Rational(this.numerator*that.numerator, this.denominator*that.denominator);
+        return new Rational(this.numerator * that.numerator, this.denominator * that.denominator);
     }
 
     public Rational divide(Rational that) {
-        return new Rational(this.numerator*that.denominator, this.denominator*that.numerator);
+        return new Rational(this.numerator * that.denominator, this.denominator * that.numerator);
     }
 
     public Rational negate() {
         return new Rational(-this.numerator, this.denominator);
     }
+
     private void normalize() {
         if (denominator < 0) {
             numerator *= -1;
@@ -104,6 +146,7 @@ class Rational {
 
 class ReversePolishNotation {
     Deque<Object> expression;
+
     ReversePolishNotation(List<Object> expression) {
         this.expression = new ArrayDeque<Object>(expression);
     }
@@ -118,9 +161,9 @@ class ReversePolishNotation {
         while (!copyOfExpression.isEmpty()) {
             nextElement = copyOfExpression.pop();
             if (nextElement instanceof Rational) {
-                stack.addFirst((Rational)nextElement);
+                stack.addFirst((Rational) nextElement);
             } else {
-                operator = (Character)nextElement;
+                operator = (Character) nextElement;
                 firstOperand = stack.pop();
                 secondOperand = stack.pop();
                 switch (operator) {
@@ -141,7 +184,8 @@ class ReversePolishNotation {
                 }
             }
         }
-        if (stack.size() > 1) throw new IllegalStateException("Invalid state of expression in the end of evaluation" + stack);
+        if (stack.size() > 1)
+            throw new IllegalStateException("Invalid state of expression in the end of evaluation" + stack);
 
         return stack.pop();
     }
@@ -159,19 +203,20 @@ class ReversePolishNotation {
         while (!copyOfExpression.isEmpty()) {
             nextElement = copyOfExpression.pop();
             if (nextElement instanceof Rational) {
-                stack.addFirst((Rational)nextElement);
+                stack.addFirst((Rational) nextElement);
             } else {
-                operator = (Character)nextElement;
+                operator = (Character) nextElement;
                 firstOperand = stack.pop();
                 if (!stack.isEmpty()) {
                     secondOperand = stack.pop();
                     sb = sb.append('(').append(secondOperand).append(operator).append(firstOperand).append(')');
                 } else {
-                    sb = sb.insert(0, '(').append(operator).append(firstOperand).append(')');
+                    sb = sb.insert(0, operator).insert(0, firstOperand).insert(0, '(').append(')');
                 }
             }
         }
-        if (stack.size() > 1) throw new IllegalStateException("Invalid state of expression in the end of evaluation" + stack);
+        if (stack.size() > 1)
+            throw new IllegalStateException("Invalid state of expression in the end of evaluation" + stack);
         return sb.toString();
     }
 }
