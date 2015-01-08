@@ -7,8 +7,12 @@ import java.util.List;
 public class InterviewTask {
     public static void main(String[] args) {
         List<Character> numbers = Arrays.asList('1', '2', '3');
-        Rational r = new Rational(8,-2);
-        System.out.println(r);
+        Rational r = new Rational(2);
+        System.out.println(r.add(new Rational(3)));
+        System.out.println(r.subtract(new Rational(3)));
+        System.out.println(r.multiply(new Rational(3)));
+        System.out.println(r.divide(new Rational(1)));
+
     }
 }
 
@@ -27,6 +31,26 @@ class Rational {
         normalize();
     }
 
+    public Rational add(Rational that) {
+        return new Rational(this.numerator * that.denominator + this.denominator*that.numerator,
+                                        this.denominator * that.denominator);
+    }
+
+    public Rational subtract(Rational that) {
+        return this.add(that.negate());
+    }
+
+    public Rational multiply(Rational that) {
+        return new Rational(this.numerator*that.numerator, this.denominator*that.denominator);
+    }
+
+    public Rational divide(Rational that) {
+        return new Rational(this.numerator*that.denominator, this.denominator*that.numerator);
+    }
+
+    public Rational negate() {
+        return new Rational(-this.numerator, this.denominator);
+    }
     private void normalize() {
         if (denominator < 0) {
             numerator *= -1;
