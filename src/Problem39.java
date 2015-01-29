@@ -6,30 +6,53 @@ import java.util.ArrayList;
 For which value of p ≤ 1000, is the number of solutions maximised?*/
 public class Problem39 {
     public static void main(String[] args) {
-        int NN = 120;
-        ArrayList[] s = new ArrayList[NN+1];
+        int NN = 1000;
+        ArrayList[] s = new ArrayList[NN + 1];
+        int m, n = 1, perimeter, k, max = 0, indexMax = 0;
         for (int i = 0; i < s.length; i++) {
             s[i] = new ArrayList();
         }
         Triplet t;
-        int m = 2, n = 1;
+
         for (m = 2; true; m++) {
             if (m * m + m * n > NN) break;
             for (n = 1; n < m; n++) {
-                t = new Problem39().new Triplet(m, n);
-                if (t.getPerimeter() > NN) {
-                    break;
+                if ((m - n) % 2 > 0 && isCoPrime(m, n)) {
+                    t = new Problem39().new Triplet(m, n);
+                    if (t.getPerimeter() > NN) {
+                        break;
+                    }
+                    k = 1;
+                    perimeter = t.getPerimeter();
+                    while (perimeter * k <= NN) {
+                        s[perimeter * k].add(t.toString() + " * " + k);
+                        k++;
+                    }
                 }
-                s[t.getPerimeter()].add(t.toString());
             }
         }
-        System.out.println();
+        for (int i = 0; i < s.length; i++) {
+            if (s[i].size() > max) {
+                max = s[i].size();
+                indexMax = i;
+            }
+        }
+        System.out.println(indexMax);
+    }
+
+    private static boolean isCoPrime(int a, int b) {
+        return gcd(a, b) == 1;
+    }
+
+    private static int gcd(int a, int b) {
+        if (b == 0) return a;
+        return gcd(b, a % b);
     }
 
     class Triplet {
         private int m, n;
 
-        Triplet(int m , int n) {
+        Triplet(int m, int n) {
             if (m <= n) throw new IllegalArgumentException();
             this.m = m;
             this.n = n;
@@ -40,7 +63,7 @@ public class Problem39 {
         }
 
         int[] getTriplet() {
-            return new int[] {m * m - n * n, 2 * m * n, m * m + n * n};
+            return new int[]{m * m - n * n, 2 * m * n, m * m + n * n};
         }
 
         public String toString() {
