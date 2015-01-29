@@ -1,12 +1,10 @@
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 /*If p is the perimeter of a right angle triangle with integral length sides, {a,b,c}, there are exactly three solutions
  for p = 120.
         {20,48,52}, {24,45,51}, {30,40,50}
 For which value of p ≤ 1000, is the number of solutions maximised?*/
-public class Problem38 {
+public class Problem39 {
     public static void main(String[] args) {
         int NN = 120;
         ArrayList[] s = new ArrayList[NN+1];
@@ -18,7 +16,7 @@ public class Problem38 {
         for (m = 2; true; m++) {
             if (m * m + m * n > NN) break;
             for (n = 1; n < m; n++) {
-                t = new Problem38().new Triplet(m, n);
+                t = new Problem39().new Triplet(m, n);
                 if (t.getPerimeter() > NN) {
                     break;
                 }
