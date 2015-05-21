@@ -21,7 +21,7 @@ public class Problem27 {
         long start = System.currentTimeMillis();
         Seed s = new Seed();
         int max = 0;
-        int primeCount = 0;
+        int primeCount;
         int abProduct = 0;
         for (int b = 2; b < 1000; b++) {
             if (!s.isPrime(b))
@@ -67,7 +67,7 @@ class Formula {
 }
 
 class Seed {
-    private Set<Integer> primes = new HashSet<Integer>();
+    private Set<Integer> primes = new HashSet<>();
     private int upper = 2;
     public Seed() {
         fill(1000);
@@ -79,11 +79,15 @@ class Seed {
     }
 
     public void fill(int n) {
+        if (n < upper) {
+            return;
+        }
         for (int i = upper; i <= n; i++) {
             if (nextPrime(i)) {
                 primes.add(i);
             }
         }
+        this.upper = n;
     }
 
     private boolean nextPrime(int n) {
