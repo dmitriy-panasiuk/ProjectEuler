@@ -10,6 +10,25 @@ is minimised; what is the value of D?
  */
 public class Problem44 {
     public static void main(String[] args) {
+        int n = 1;
+        int Pk, Pj;
+        System.out.println(isPenta(13));
+        loop: while (true) {
+            Pk = n * (3 * n - 1) / 2;
+            for (int j = n - 1; j > 0; j--) {
+                Pj = j * (3 * j - 1) / 2;
+                if (isPenta(Pk + Pj) && isPenta(Pk - Pj)) {
+                    System.out.println(n + " " + j);
+                    System.out.println(Pk - Pj);
+                    break loop;
+                }
+            }
+            n++;
+        }
+    }
 
+    private static boolean isPenta(int x) {
+        double penTest = (Math.sqrt(1 + 24 * x) + 1.0) / 6.0;
+        return penTest == ((int)penTest);
     }
 }
