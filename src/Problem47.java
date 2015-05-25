@@ -22,7 +22,7 @@ public class Problem47 {
         Seed seed = new Seed(1000000);
         int n = 0, number = 4;
         while (n != 4) {
-            if (numberOfFactors(number, seed.getPrimes_list()) == 4) {
+            if (numberOfFactors(number, seed.getPrimes_list()) >= 4) {
                 n++;
             } else {
                 n = 0;
@@ -30,19 +30,26 @@ public class Problem47 {
             number++;
         }
         System.out.println(number);
+
     }
 
     private static int numberOfFactors(int n, List<Integer> list) {
         int factors = 0;
         int number = n, primeNumber = 0;
+        int prevPrime = 0;
 
-        while (number > 1 && number >= list.get(primeNumber)) {
+        while (number > 1) {
             if (number % list.get(primeNumber) == 0) {
-                factors++;
+                if (list.get(primeNumber) != prevPrime) {
+                    factors++;
+                    prevPrime = list.get(primeNumber);
+                }
                 number /= list.get(primeNumber);
+            } else {
+                primeNumber++;
             }
-            primeNumber++;
         }
+
         return factors;
     }
 }
