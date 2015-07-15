@@ -14,14 +14,13 @@ public class Problem53 {
 
     public static void main(String[] args) {
         long n = 2, k, res = 0, c;
-        System.out.println(combination(18, 9));
         while (n <= N) {
             k = n - 1;
             while (k >= 1) {
                 c = combination(n, k);
                 if ( c > LIMIT) {
-                    res += 1;
-                    System.out.println(n + " " + k);
+                    res += k - (n - k)+ 1 ;
+                    break;
                 }
                 k--;
             }
@@ -35,15 +34,13 @@ public class Problem53 {
         if (r < (n / 2)) {
             return combination(n, n - r);
         }
-        long res = 1, temp = 1;
+        long res = 1, rTemp = n - 1;
 
-        for (long i = n; i > r; i--) {
-            res *= i;
-        }
-        for (long j = n - r; j > 1; j--) {
-            temp *= j;
+        while (r <= rTemp) {
+            res = res * (rTemp + 1) / (n - rTemp);
+            rTemp--;
         }
 
-        return res / temp;
+        return res;
     }
 }
