@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
@@ -16,7 +15,7 @@ Using words.txt (right click and 'Save Link/Target As...'), a 16K text file cont
 */
 public class Problem42 {
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(System.getProperty("user.dir") + "\\resources\\problem42.txt"));
+        Scanner scanner = new Scanner(Problem42.class.getResourceAsStream("problem42.txt"));
         scanner.useDelimiter(",");
         String str;
         int value, numberOfTriangles = 0;

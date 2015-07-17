@@ -7,8 +7,6 @@ is the 938th name in the list. So, COLIN would obtain a score of 938 × 53 = 497
 What is the total of all the name scores in the file?
 */
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.*;
 
 public class Problem22 {
@@ -18,8 +16,6 @@ public class Problem22 {
         long start = System.currentTimeMillis();
         TreeMap<String, Integer> map = init(FILENAME);
         System.out.println(getTotalScore(map));
-//        List<String> l = initAlt(FILENAME);
-//        System.out.println(getTotalScoreAlt(l));
         System.out.println(System.currentTimeMillis() - start);
     }
 
@@ -37,15 +33,11 @@ public class Problem22 {
     private static TreeMap<String, Integer> init(String filename) {
         TreeMap<String, Integer> strings = new TreeMap<String, Integer>();
         String str;
-        try {
-            Scanner scanner = new Scanner(new File(System.getProperty("user.dir") + "\\resources\\" + filename));
-            scanner.useDelimiter(",");
-            while (scanner.hasNext()) {
-                str = scanner.next().replaceAll("\"", "");
-                strings.put(str, alphaValue(str));
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        Scanner scanner = new Scanner(Problem22.class.getResourceAsStream(filename));
+        scanner.useDelimiter(",");
+        while (scanner.hasNext()) {
+            str = scanner.next().replaceAll("\"", "");
+            strings.put(str, alphaValue(str));
         }
 
         return strings;
@@ -67,15 +59,11 @@ public class Problem22 {
     private static List<String> initAlt(String filename) {
         List<String> strings = new ArrayList<String>();
         String str;
-        try {
-            Scanner scanner = new Scanner(new File(System.getProperty("user.dir") + "\\resources\\" + filename));
-            scanner.useDelimiter(",");
-            while (scanner.hasNext()) {
-                str = scanner.next().replaceAll("\"", "");
-                strings.add(str);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
+        Scanner scanner = new Scanner(Problem54.class.getResourceAsStream(filename));
+        scanner.useDelimiter(",");
+        while (scanner.hasNext()) {
+            str = scanner.next().replaceAll("\"", "");
+            strings.add(str);
         }
 
         return strings;

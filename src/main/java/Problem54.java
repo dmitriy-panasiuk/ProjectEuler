@@ -22,7 +22,6 @@ and in each hand there is a clear winner.
 How many hands does Player 1 win?
 */
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,7 +30,7 @@ import java.util.Scanner;
 
 public class Problem54 {
     public static void main(String[] args) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(System.getProperty("user.dir") + "\\resources\\problem54.txt"));
+        Scanner scanner = new Scanner(Problem54.class.getResourceAsStream("problem54.txt"));
 
         PokerHand hand1, hand2;
         String[] s1 = new String[5];

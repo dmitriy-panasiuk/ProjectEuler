@@ -29,7 +29,10 @@ By starting at the top of the triangle below and moving to adjacent numbers on t
         NOTE: As there are only 16384 routes, it is possible to solve this problem by trying every route. However, Problem 67, is the same challenge with a triangle containing one-hundred rows; it cannot be solved by brute force, and requires a clever method! ;o)
 */
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 public class Problem18 {
     public static void main(String[] args) {
@@ -43,7 +46,7 @@ public class Problem18 {
     }
 
     private static void initNumbers(int[][] numbers, String filename) {
-        File f = new File(System.getProperty("user.dir") + "\\resources\\" + filename);
+        File f = new File(Problem18.class.getResource(filename).getFile());
         String s;
         int counter = 0;
         try {
