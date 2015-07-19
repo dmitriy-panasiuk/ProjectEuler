@@ -23,10 +23,7 @@ How many hands does Player 1 win?
 */
 
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Problem54 {
     public static void main(String[] args) throws FileNotFoundException {
@@ -51,6 +48,10 @@ public class Problem54 {
 
             hand1 = new PokerHand(s1);
             hand2 = new PokerHand(s2);
+            System.out.println(Arrays.toString(s1));
+            System.out.println(Arrays.toString(s2));
+            System.out.println(hand1.getRank());
+            System.out.println(hand2.getRank());
         }
     }
 }
@@ -92,6 +93,8 @@ class PokerHand {
         private List<Integer> values = new ArrayList<>();
         private int[] cardValues = new int[5];
         private char[] cardSuites = new char[5];
+        private Map<Integer, String> rankValues = new HashMap<>();
+        private Map<Integer, Integer> rankAddValues = new HashMap<>();
 
         Rank() {
             for (int i = 0; i < hand.length;i++) {
@@ -99,6 +102,16 @@ class PokerHand {
                 cardSuites[i] = hand[i].suite;
             }
             Arrays.sort(cardValues);
+            rankValues.put(1, "High Card");
+            rankValues.put(2, "One Pair");
+            rankValues.put(3, "Two Pairs");
+            rankValues.put(4, "Three of a Kind");
+            rankValues.put(5, "Straight");
+            rankValues.put(6, "Flush");
+            rankValues.put(7, "Full House");
+            rankValues.put(8, "Four of a Kind");
+            rankValues.put(9, "Straight Flush");
+            init();
         }
 
         private boolean isFlush() {
@@ -115,7 +128,7 @@ class PokerHand {
         private boolean isStraight() {
             int prevValue = cardValues[0];
             for (int i = 1; i < cardValues.length; i++) {
-                if ((prevValue - cardValues[i]) != 1 ) {
+                if ((cardValues[i] - prevValue) != 1 ) {
                     return false;
                 }
                 prevValue = cardValues[i];
@@ -125,20 +138,80 @@ class PokerHand {
         }
 
         private void init() {
+
             //Straight flush or Royalflush
             if (isFlush() && isStraight()) {
                 rank = 9;
+                rankAddValues.put(0, cardValues[4]);
                 return;
             }
-
+            //Flush
             if (isFlush()) {
                 rank = 6;
+                rankAddValues.put(0, cardValues[4]);
                 return;
             }
+            //Straight
             if (isStraight()) {
                 rank = 5;
+                rankAddValues.put(0, cardValues[4]);
                 return;
             }
+            //Any other
+            List<Integer> series = new ArrayList<>();
+            int range = 1;
+            for (int i = 1; i < 5; i++) {
+                if (cardValues[i] == cardValues[i-1]) {
+                    range++;
+                } else if (range > 1) {
+                    series.add(range);
+                    rankAddValues.put(cardValues[i - 1], range);
+                    range = 1;
+                }
+            }
+            if (range > 1) {
+                series.add(range);
+                rankAddValues.put(cardValues[4], range);
+            }
+            Collections.sort(series);
+            if (series.size() == 0) {
+                rank = 1;
+                return;
+            }
+            if (series.size() == 1) {
+                switch (series.get(0)) {
+                    case 2: rank = 2; break;
+                    case 3: rank = 4; break;
+                    case 4: rank = 8; break;
+                }
+                return;
+            }
+            if (series.size() == 2) {
+                if (series.get(0).equals(series.get(1))) {
+                    rank = 3;
+                } else {
+                    rank = 7;
+                }
+            }
+        }
+
+        private int getRank() {
+            return rank;
+        }
+
+        @Override
+        public String toString() {
+            String res = "" + rankValues.get(rank) + " : ";
+            for (Map.Entry e : rankAddValues.entrySet()) {
+                res += e.getKey() + " - " + e.getValue() + " ";
+            }
+            return res;
         }
     }
+
+    public Rank getRank() {
+        return new Rank();
+    }
+
+
 }
