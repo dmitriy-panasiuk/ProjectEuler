@@ -28,36 +28,47 @@ import java.util.*;
 public class Problem54 {
     public static void main(String[] args) throws FileNotFoundException {
         Scanner scanner = new Scanner(Problem54.class.getResourceAsStream("problem54.txt"));
+        int firstPlayerWins = 0;
 
         PokerHand hand1, hand2;
         String[] s1 = new String[5];
         String[] s2 = new String[5];
 
         while (scanner.hasNext()) {
-            s1[0]= scanner.next();
-            s1[1]= scanner.next();
-            s1[2]= scanner.next();
-            s1[3]= scanner.next();
-            s1[4]= scanner.next();
+            s1[0] = scanner.next();
+            s1[1] = scanner.next();
+            s1[2] = scanner.next();
+            s1[3] = scanner.next();
+            s1[4] = scanner.next();
 
-            s2[0]= scanner.next();
-            s2[1]= scanner.next();
-            s2[2]= scanner.next();
-            s2[3]= scanner.next();
-            s2[4]= scanner.next();
+            s2[0] = scanner.next();
+            s2[1] = scanner.next();
+            s2[2] = scanner.next();
+            s2[3] = scanner.next();
+            s2[4] = scanner.next();
 
             hand1 = new PokerHand(s1);
             hand2 = new PokerHand(s2);
-            System.out.println(Arrays.toString(s1));
-            System.out.println(Arrays.toString(s2));
-            System.out.println(hand1.getRank());
-            System.out.println(hand2.getRank());
+            if (hand1.getRank().compareTo(hand2.getRank()) > 0) {
+                firstPlayerWins++;
+            }
+            /*if (hand1.getRank().compareTo(hand2.getRank()) == 0) {
+                System.out.println(Arrays.toString(s1));
+                System.out.println(Arrays.toString(s2));
+                System.out.println(hand1.getRank());
+                System.out.println(hand2.getRank());
+                System.out.println(hand1.getRank().compareTo(hand2.getRank()));
+
+            }*/
+
         }
+        System.out.println(firstPlayerWins);
     }
 }
 
 class PokerHand {
     private Card[] hand = new Card[5];
+
     PokerHand(String[] cards) {
         int i = 0;
         for (String card : cards) {
@@ -70,34 +81,39 @@ class PokerHand {
         private int value;
         private char suite;
 
-        Card (String value) {
+        Card(String value) {
             suite = value.charAt(1);
             switch (value.charAt(0)) {
-                case 'T' : this.value = 10;
+                case 'T':
+                    this.value = 10;
                     break;
-                case 'J' : this.value = 11;
+                case 'J':
+                    this.value = 11;
                     break;
-                case 'Q' : this.value = 12;
+                case 'Q':
+                    this.value = 12;
                     break;
-                case 'K' : this.value = 13;
+                case 'K':
+                    this.value = 13;
                     break;
-                case 'A' : this.value = 14;
+                case 'A':
+                    this.value = 14;
                     break;
-                default: this.value = Integer.parseInt("" + value.charAt(0));
+                default:
+                    this.value = Integer.parseInt("" + value.charAt(0));
             }
         }
     }
 
-    class Rank {
+    class Rank implements Comparable<Rank> {
         private int rank;
-        private List<Integer> values = new ArrayList<>();
         private int[] cardValues = new int[5];
         private char[] cardSuites = new char[5];
         private Map<Integer, String> rankValues = new HashMap<>();
         private Map<Integer, Integer> rankAddValues = new HashMap<>();
 
         Rank() {
-            for (int i = 0; i < hand.length;i++) {
+            for (int i = 0; i < hand.length; i++) {
                 cardValues[i] = hand[i].value;
                 cardSuites[i] = hand[i].suite;
             }
@@ -128,7 +144,7 @@ class PokerHand {
         private boolean isStraight() {
             int prevValue = cardValues[0];
             for (int i = 1; i < cardValues.length; i++) {
-                if ((cardValues[i] - prevValue) != 1 ) {
+                if ((cardValues[i] - prevValue) != 1) {
                     return false;
                 }
                 prevValue = cardValues[i];
@@ -161,17 +177,17 @@ class PokerHand {
             List<Integer> series = new ArrayList<>();
             int range = 1;
             for (int i = 1; i < 5; i++) {
-                if (cardValues[i] == cardValues[i-1]) {
+                if (cardValues[i] == cardValues[i - 1]) {
                     range++;
                 } else if (range > 1) {
                     series.add(range);
-                    rankAddValues.put(cardValues[i - 1], range);
+                    rankAddValues.put(range, cardValues[i - 1]);
                     range = 1;
                 }
             }
             if (range > 1) {
                 series.add(range);
-                rankAddValues.put(cardValues[4], range);
+                rankAddValues.put(range, cardValues[4]);
             }
             Collections.sort(series);
             if (series.size() == 0) {
@@ -180,9 +196,15 @@ class PokerHand {
             }
             if (series.size() == 1) {
                 switch (series.get(0)) {
-                    case 2: rank = 2; break;
-                    case 3: rank = 4; break;
-                    case 4: rank = 8; break;
+                    case 2:
+                        rank = 2;
+                        break;
+                    case 3:
+                        rank = 4;
+                        break;
+                    case 4:
+                        rank = 8;
+                        break;
                 }
                 return;
             }
@@ -195,10 +217,6 @@ class PokerHand {
             }
         }
 
-        private int getRank() {
-            return rank;
-        }
-
         @Override
         public String toString() {
             String res = "" + rankValues.get(rank) + " : ";
@@ -206,6 +224,46 @@ class PokerHand {
                 res += e.getKey() + " - " + e.getValue() + " ";
             }
             return res;
+        }
+
+
+        @Override
+        public int compareTo(Rank o) {
+            if (rank > o.rank) {
+                return 1;
+            }
+            if (rank < o.rank) {
+                return -1;
+            }
+            if (rankAddValues.size() == 0) {
+                for (int i = 4; i >= 0; i--) {
+                    if (cardValues[i] > o.cardValues[i]) {
+                        return 1;
+                    }
+                    if (cardValues[i] < o.cardValues[i]) {
+                        return -1;
+                    }
+                }
+                return 0;
+            }
+            if (rankAddValues.size() == 2) {
+                throw new IllegalArgumentException("Two arguments in rank values");
+            }
+            if (rankAddValues.get(2) > o.rankAddValues.get(2)) {
+                return 1;
+            }
+            if (rankAddValues.get(2) < o.rankAddValues.get(2)) {
+                return -1;
+            }
+            for (int i = 4; i >= 0; i--) {
+                if (cardValues[i] > o.cardValues[i]) {
+                    return 1;
+                }
+                if (cardValues[i] < o.cardValues[i]) {
+                    return -1;
+                }
+            }
+            return 0;
         }
     }
 
