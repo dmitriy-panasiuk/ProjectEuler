@@ -1,5 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
+import java.math.BigInteger;
 
 /*
 If we take 47, reverse and add, 47 + 74 = 121, which is palindromic.
@@ -20,55 +19,36 @@ How many Lychrel numbers are there below ten-thousand?
 NOTE: Wording was modified slightly on 24 April 2007 to emphasise the theoretical nature of Lychrel numbers.
 */
 public class Problem55 {
-    private static final int N = 10000;
+    private static final BigInteger N = new BigInteger("10000");
     private static final int N_ITER = 50;
 
 
     public static void main(String[] args) {
         int nLychrel = 0;
-        long sum;
+        BigInteger sum;
 
-        outer: for (long i = 1; i < N; i++) {
-            long n = i;
+        outer: for (BigInteger i = BigInteger.ONE; i.compareTo(N) < 1; i = i.add(BigInteger.ONE)) {
+            BigInteger n = i;
             for (int iter = 1; iter < N_ITER; iter++) {
-                sum = n + reverseNumber(n);
+                sum = n.add(reverseNumber(n));
                 if (isPalindrom(sum)) {
-                    System.out.println(i + " is not Lychrel");
                     continue outer;
                 }
                 n = sum;
             }
             nLychrel++;
         }
-
         System.out.println(nLychrel);
     }
 
-    private static long reverseNumber(long n) {
-        long res = 0;
-        long temp = n;
+    private static BigInteger reverseNumber(BigInteger n) {
 
-        while (temp >= 1) {
-            res = res * 10 + (temp % 10);
-            temp /= 10;
-        }
-
-        return res;
+        return new BigInteger(new StringBuilder(n.toString()).reverse().toString());
     }
 
-    private static boolean isPalindrom(long n) {
-        List<Integer> digits = new ArrayList<>();
+    private static boolean isPalindrom(BigInteger n) {
+        StringBuilder reverse = new StringBuilder(n.toString()).reverse();
 
-        while (n > 0) {
-            digits.add((int) (n % 10));
-            n /= 10;
-        }
-        for (int i = 0, j = digits.size() - 1; i < j; i++, j--) {
-            if (!digits.get(i).equals(digits.get(j))) {
-                return false;
-            }
-        }
-
-        return true;
+        return n.toString().equals(reverse.toString());
     }
 }
