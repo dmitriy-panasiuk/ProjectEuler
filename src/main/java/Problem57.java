@@ -1,3 +1,5 @@
+import Helpers.BigNumber;
+
 /**
  * It is possible to show that the square root of two can be expressed as an infinite continued fraction.
  * √ 2 = 1 + 1/(2 + 1/(2 + 1/(2 + ... ))) = 1.414213...
@@ -14,28 +16,19 @@ public class Problem57 {
     private static final int N = 1000;
 
     public static void main(String[] args) {
-        long numerator = 3, denominator = 2, temp, res = 0;
+        BigNumber numerator = new BigNumber(3), denominator = new BigNumber(2), temp;
+        int res = 0;
 
         for (int i = 2; i <= N; i++) {
             temp = denominator;
-            denominator = numerator + denominator;
-            numerator = denominator + temp;
-            if (numberOfDigits(numerator) > numberOfDigits(denominator)) {
+            denominator = numerator.add(denominator);
+            numerator = denominator.add(temp);
+            if (numerator.digitCount() > denominator.digitCount()) {
                 res++;
+                System.out.println(i + " " + numerator + " " + denominator);
             }
         }
 
         System.out.println(res);
-    }
-
-    private static int numberOfDigits(long n) {
-        int res = 0;
-
-        while (n > 0) {
-            n /= 10;
-            res++;
-        }
-
-        return res;
     }
 }
